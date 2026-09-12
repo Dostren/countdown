@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown</title>
+
+    <link rel="icon" type="image/ico" href="favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+            color: #000;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #countdown {
+            font-size: 10vw;
+            margin-bottom: 1vw;
+        }
+        .target-date {
+            font-size: 2vw;
+            color: #7f7f7f;
+            font-weight: 600;
+        }
+        .noscript {
+            font-size: 2.5vw;
+            color: #d32f2f;
+            font-weight: 800;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="countdown">00:00:00:00</div>
+    <div class="target-date">MM/DD/YYYY HH:MM</div>
+
+    <noscript>
+        <div class="noscript">
+            Oops. JavaScript not found!
+        </div>
+    </noscript>
+
+    <script>
+    const nameofcountdown = "Countdown";
+	const timesuptext = "Time's up";
+        const targetDate = new Date(2026, 5, 13, 19, 0, 0); // year, month-1, day, hour, minute, second
+
+        function updateCountdown() {
+            const now = new Date();
+            let diff = targetDate - now;
+
+            if (diff < 0) {
+                document.getElementById('countdown').textContent = timesuptext;
+                document.title = timesuptext + " - " + nameofcountdown;
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            diff %= (1000 * 60 * 60 * 24);
+
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            diff %= (1000 * 60 * 60);
+
+            const minutes = Math.floor(diff / (1000 * 60));
+            diff %= (1000 * 60);
+
+            const seconds = Math.floor(diff / 1000);
+
+            const format = (num) => num < 10 ? '0' + num : num;
+            const displayText = [
+                days > 0 ? format(days) : null,
+                hours > 0 || days > 0 ? format(hours) : null,
+                minutes > 0 || days > 0 || hours > 0 ? format(minutes) : null,
+                format(seconds)
+            ]
+                .filter(Boolean)
+                .join(':');
+
+            document.getElementById('countdown').textContent = displayText;
+            document.title = displayText + " - " + nameofcountdown;
+        }
+
+        function updateTargetDate() {
+            const day = targetDate.getDate();
+            const month = targetDate.getMonth() + 1;
+            const year = targetDate.getFullYear();
+            const hours = targetDate.getHours();
+            const minutes = targetDate.getMinutes();
+
+            const formatTwoDigits = (num) => num < 10 ? '0' + num : num;
+
+            const formattedDate = `${formatTwoDigits(month)}/${formatTwoDigits(day)}/${year} ${formatTwoDigits(hours)}:${formatTwoDigits(minutes)}`;
+
+            document.querySelector('.target-date').textContent = formattedDate;
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+        updateTargetDate();
+    </script>
+</body>
+</html>
