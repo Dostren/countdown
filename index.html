@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown</title>
+
+    <link rel="icon" type="image/ico" href="favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+            color: #000;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark {
+            background-color: #000;
+            color: #fff;
+        }
+
+        #countdown {
+            font-size: 10vw;
+            margin-bottom: 1vw;
+            text-align: center;
+            padding: 0 16px;
+            word-break: break-word;
+        }
+
+        .target-date {
+            font-size: 2vw;
+            margin-bottom: 1vw;
+            color: #7f7f7f;
+            font-weight: 600;
+            text-align: center;
+            padding: 0 16px;
+        }
+
+        body.dark .target-date {
+            color: #a0a0a0;
+        }
+
+        .noscript {
+            font-size: 2.5vw;
+            color: #d32f2f;
+            font-weight: 800;
+            text-align: center;
+            padding: 0 16px;
+        }
+
+        @media (max-width: 768px) {
+            #countdown {
+                font-size: 12vw;
+            }
+
+            .target-date {
+                font-size: 4vw;
+            }
+
+            .noscript {
+                font-size: 5vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="countdown">00:00:00:00</div>
+    <div class="target-date">MM/DD/YYYY HH:MM</div>
+
+    <noscript>
+        <div class="noscript">
+            Oops. JavaScript not found!
+        </div>
+    </noscript>
+
+    <script>
+        const DEFAULTS = {
+            name: "Countdown",
+            timesUp: "Time's up",
+            date: "2026-06-13T19:00:00",
+            dark: false,
+            format: "1"
+        };
+
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+
+            const dateParam = params.get("date") || params.get("target") || params.get("end");
+            const nameParam = params.get("name") || params.get("title");
+            const timesUpParam = params.get("timesup") || params.get("timesUp") || params.get("endText");
+            const darkParam = params.get("dark");
+            const formatParam = params.get("format");
+
+            let darkValue = DEFAULTS.dark;
+            if (darkParam !== null) {
+                darkValue = darkParam === "true" || darkParam === "1" || darkParam === "";
+            }
+
+            let formatValue = DEFAULTS.format;
+            if (formatParam === "1" || formatParam === "2" || formatParam === "3") {
+                formatValue = formatParam;
+            }
+
+            return {
+                date: dateParam || DEFAULTS.date,
+                name: nameParam || DEFAULTS.name,
+                timesUp: timesUpParam || DEFAULTS.timesUp,
+                dark: darkValue,
+                format: formatValue
+            };
+        }
+
+        function parseDate(dateString) {
+            if (!dateString) return null;
+
+            let date = new Date(dateString);
+
+            if (isNaN(date.getTime())) {
+                date = new Date(dateString.replace(/\s+/g, "T"));
+            }
+
+            if (isNaN(date.getTime())) return null;
+
+            return date;
+        }
+
+        function applyTheme(isDark) {
+            document.body.classList.toggle("dark", isDark);
+        }
+
+        const settings = getUrlParams();
+        const targetDate = parseDate(settings.date) || parseDate(DEFAULTS.date);
+
+        applyTheme(settings.dark);
+
+        function updateCountdown() {
+            const now = new Date();
+            let diff = targetDate - now;
+
+            if (diff < 0) {
+                document.getElementById("countdown").textContent = settings.timesUp;
+                document.title = settings.timesUp + " - " + settings.name;
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            diff %= (1000 * 60 * 60 * 24);
+
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            diff %= (1000 * 60 * 60);
+
+            const minutes = Math.floor(diff / (1000 * 60));
+            diff %= (1000 * 60);
+
+            const seconds = Math.floor(diff / 1000);
+
+            const formatNum = (num) => String(num).padStart(2, "0");
+
+            const displayParts = [];
+            if (days > 0) displayParts.push(formatNum(days));
+            if (days > 0 || hours > 0) displayParts.push(formatNum(hours));
+            if (days > 0 || hours > 0 || minutes > 0) displayParts.push(formatNum(minutes));
+            displayParts.push(formatNum(seconds));
+
+            const displayText = displayParts.join(":");
+
+            document.getElementById("countdown").textContent = displayText;
+            document.title = displayText + " - " + settings.name;
+        }
+
+        function updateTargetDate() {
+            const day = String(targetDate.getDate()).padStart(2, "0");
+            const month = String(targetDate.getMonth() + 1).padStart(2, "0");
+            const year = targetDate.getFullYear();
+            const hours = String(targetDate.getHours()).padStart(2, "0");
+            const minutes = String(targetDate.getMinutes()).padStart(2, "0");
+
+            let formattedDate;
+
+            switch (settings.format) {
+                case "2":
+                    formattedDate = `${day}/${month}/${year} ${hours}:${minutes}`;
+                    break;
+                case "3":
+                    formattedDate = `${day}.${month}.${year} ${hours}:${minutes}`;
+                    break;
+                case "1":
+                default:
+                    formattedDate = `${month}/${day}/${year} ${hours}:${minutes}`;
+                    break;
+            }
+
+            document.querySelector(".target-date").textContent = formattedDate;
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+        updateTargetDate();
+    </script>
+</body>
+</html>
