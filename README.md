@@ -21,4 +21,4 @@ Examples:
 | --- | --- | --- | --- | --- | --- |
 | index.html?dark=1&format=3&name=2027&date=2027-01-01T00:00:00&timesup=Happy%20new%20year! | `Year: 2027; month: January; day: 1; hour: 0; minute: 0; second: 0.` | `2027` | `Happy new year!` | `DD.MM.YYYY HH:MM` | `Enabled` |
 | index.html?format=2&name=Vacation&date=2027-07-15T12:00:00 | `Year: 2027; month: July; day: 15; hour: 12; minute: 0; second: 0.` | `Vacation` | `Time's up` (Default) | `DD/MM/YYYY HH:MM` | `Disabled` (Default) |
-|index.html?timesup=Abcdef&name=Example&dark | `Year: 2026; month: June; day: 13; hour: 19; minute: 0; second: 0.` (Default) | `Example` | `Abcdef` | `MM/DD/YYYY HH:MM` (Default) | Enabled |
+|index.html?timesup=Abcdef&name=Example&dark | `Year: 2026; month: June; day: 13; hour: 19; minute: 0; second: 0.` (Default) | `Example` | `Abcdef` | `MM/DD/YYYY HH:MM` (Default) | `Enabled` |
